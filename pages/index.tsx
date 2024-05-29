@@ -26,7 +26,7 @@ export const getStaticProps: GetStaticProps = async () => {
         }
       };
     } else {
-      throw new Error(`Connection limit reached. Please try again later.`);
+      throw new Error(`Connection limit reached. Please try again later.`, e);
     }
   }
 

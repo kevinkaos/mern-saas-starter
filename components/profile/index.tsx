@@ -26,6 +26,7 @@ export default function Profile({
   settings?: boolean;
   user: UserProps;
 }) {
+  console.log('user', user);
   const router = useRouter();
   const { data: session } = useSession();
   const [saving, setSaving] = useState(false);
