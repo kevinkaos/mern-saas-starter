@@ -11,15 +11,40 @@ import {
 } from '@/components/icons';
 import { useSession } from 'next-auth/react';
 import BlurImage from '../blur-image';
-import { useCallback, useEffect, useState } from 'react';
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState
+} from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import TextareaAutosize from 'react-textarea-autosize';
-import { MDXRemote } from 'next-mdx-remote';
-import { Button } from '../ui/button';
+import Biography from '@/components/profile/biography';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { MDXRemoteSerializeResult } from 'next-mdx-remote';
 
 export const profileWidth = 'max-w-5xl mx-auto px-4 sm:px-6 lg:px-8';
+
+interface Data {
+  username: string;
+  image: string;
+  bio: string;
+  bioMdx: MDXRemoteSerializeResult<Record<string, unknown>>;
+}
+
+export interface BiographyProps {
+  settingsPage: boolean;
+  setData: Dispatch<
+    SetStateAction<{
+      username: string;
+      image: string;
+      bio: string;
+      bioMdx: MDXRemoteSerializeResult<Record<string, unknown>>;
+    }>
+  >;
+  data: Data;
+}
 
 export default function Profile({
   settings,
@@ -31,7 +56,7 @@ export default function Profile({
   const router = useRouter();
   const { data: session } = useSession();
   const [saving, setSaving] = useState(false);
-  const [data, setData] = useState({
+  const [data, setData] = useState<Data>({
     username: user.username,
     image: user.image,
     bio: user.bio || '',
@@ -174,88 +199,30 @@ export default function Profile({
                 ))}
               </TabsList>
               <TabsContent value={tabs[0].name}>
-                <div className={`${profileWidth} mt-16`}>
-                  <h2 className="font-semibold font-mono text-2xl text-white">
-                    Bio
-                  </h2>
-                  {settingsPage ? (
-                    <>
-                      <TextareaAutosize
-                        name="description"
-                        onInput={(e) => {
-                          setData({
-                            ...data,
-                            bio: (e.target as HTMLTextAreaElement).value
-                          });
-                        }}
-                        className="mt-1 w-full max-w-2xl px-0 text-sm tracking-wider leading-6 text-white bg-black font-mono border-0 border-b border-gray-800 focus:border-white resize-none focus:outline-none focus:ring-0"
-                        placeholder="Enter a short bio about yourself... (Markdown supported)"
-                        value={data.bio}
-                      />
-                      <div className="flex justify-end w-full max-w-2xl">
-                        <p className="text-gray-400 font-mono text-sm">
-                          {data.bio.length}/256
-                        </p>
-                      </div>
-                    </>
-                  ) : (
-                    <article className="mt-3 max-w-2xl text-sm tracking-wider leading-6 text-white font-mono prose prose-headings:text-white prose-a:text-white">
-                      <MDXRemote {...data.bioMdx} />
-                    </article>
-                  )}
-                </div>
+                <Biography
+                  settingsPage={settingsPage}
+                  setData={setData}
+                  data={data}
+                />
+              </TabsContent>
+              <TabsContent value={tabs[1].name}>
+                <Biography
+                  settingsPage={settingsPage}
+                  setData={setData}
+                  data={data}
+                />
+              </TabsContent>
+              <TabsContent value={tabs[2].name}>
+                <Biography
+                  settingsPage={settingsPage}
+                  setData={setData}
+                  data={data}
+                />
               </TabsContent>
             </Tabs>
-            {/* <nav className="-mb-px flex space-x-8" aria-label="Tabs">
-              {tabs.map((tab) => (
-                <Button
-                  variant={'ghost'}
-                  key={tab.name}
-                  disabled={tab.name !== 'Profile'}
-                  className={`${
-                    tab.name === 'Profile'
-                      ? 'border-white text-white'
-                      : 'border-transparent text-gray-400 cursor-not-allowed'
-                  }
-                    whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm font-mono`}
-                >
-                  {tab.name}
-                </Button>
-              ))}
-            </nav> */}
           </div>
         </div>
       </div>
-
-      {/* Bio */}
-      {/* <div className={`${profileWidth} mt-16`}>
-        <h2 className="font-semibold font-mono text-2xl text-white">Bio</h2>
-        {settingsPage ? (
-          <>
-            <TextareaAutosize
-              name="description"
-              onInput={(e) => {
-                setData({
-                  ...data,
-                  bio: (e.target as HTMLTextAreaElement).value
-                });
-              }}
-              className="mt-1 w-full max-w-2xl px-0 text-sm tracking-wider leading-6 text-white bg-black font-mono border-0 border-b border-gray-800 focus:border-white resize-none focus:outline-none focus:ring-0"
-              placeholder="Enter a short bio about yourself... (Markdown supported)"
-              value={data.bio}
-            />
-            <div className="flex justify-end w-full max-w-2xl">
-              <p className="text-gray-400 font-mono text-sm">
-                {data.bio.length}/256
-              </p>
-            </div>
-          </>
-        ) : (
-          <article className="mt-3 max-w-2xl text-sm tracking-wider leading-6 text-white font-mono prose prose-headings:text-white prose-a:text-white">
-            <MDXRemote {...data.bioMdx} />
-          </article>
-        )}
-      </div> */}
 
       {/* Edit buttons */}
       {settingsPage ? (
