@@ -154,7 +154,10 @@ export async function searchUser(query: string): Promise<UserProps[]> {
             path: {
               wildcard: '*' // match on both name and username
             },
-            fuzzy: {},
+            fuzzy: {
+              maxEdits: 2, // Adjust as needed
+              prefixLength: 1
+            },
             score: {
               // search ranking algorithm: multiply relevance score by the log1p of follower count
               function: {
