@@ -16,6 +16,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import TextareaAutosize from 'react-textarea-autosize';
 import { MDXRemote } from 'next-mdx-remote';
+import { Button } from '../ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export const profileWidth = 'max-w-5xl mx-auto px-4 sm:px-6 lg:px-8';
 
@@ -26,7 +28,6 @@ export default function Profile({
   settings?: boolean;
   user: UserProps;
 }) {
-  console.log('user', user);
   const router = useRouter();
   const { data: session } = useSession();
   const [saving, setSaving] = useState(false);
@@ -162,11 +163,53 @@ export default function Profile({
 
       {/* Tabs */}
       <div className="mt-6 sm:mt-2 2xl:mt-5">
-        <div className="border-b border-gray-800">
+        <div className="border-gray-800">
           <div className={`${profileWidth} mt-10`}>
-            <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+            <Tabs defaultValue={tabs[0].name}>
+              <TabsList className="grid w-full grid-cols-3 bg-dark-accent-1">
+                {tabs.map((tab) => (
+                  <TabsTrigger key={tab.name} value={tab.name}>
+                    {tab.name}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+              <TabsContent value={tabs[0].name}>
+                <div className={`${profileWidth} mt-16`}>
+                  <h2 className="font-semibold font-mono text-2xl text-white">
+                    Bio
+                  </h2>
+                  {settingsPage ? (
+                    <>
+                      <TextareaAutosize
+                        name="description"
+                        onInput={(e) => {
+                          setData({
+                            ...data,
+                            bio: (e.target as HTMLTextAreaElement).value
+                          });
+                        }}
+                        className="mt-1 w-full max-w-2xl px-0 text-sm tracking-wider leading-6 text-white bg-black font-mono border-0 border-b border-gray-800 focus:border-white resize-none focus:outline-none focus:ring-0"
+                        placeholder="Enter a short bio about yourself... (Markdown supported)"
+                        value={data.bio}
+                      />
+                      <div className="flex justify-end w-full max-w-2xl">
+                        <p className="text-gray-400 font-mono text-sm">
+                          {data.bio.length}/256
+                        </p>
+                      </div>
+                    </>
+                  ) : (
+                    <article className="mt-3 max-w-2xl text-sm tracking-wider leading-6 text-white font-mono prose prose-headings:text-white prose-a:text-white">
+                      <MDXRemote {...data.bioMdx} />
+                    </article>
+                  )}
+                </div>
+              </TabsContent>
+            </Tabs>
+            {/* <nav className="-mb-px flex space-x-8" aria-label="Tabs">
               {tabs.map((tab) => (
-                <button
+                <Button
+                  variant={'ghost'}
                   key={tab.name}
                   disabled={tab.name !== 'Profile'}
                   className={`${
@@ -177,15 +220,15 @@ export default function Profile({
                     whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm font-mono`}
                 >
                   {tab.name}
-                </button>
+                </Button>
               ))}
-            </nav>
+            </nav> */}
           </div>
         </div>
       </div>
 
       {/* Bio */}
-      <div className={`${profileWidth} mt-16`}>
+      {/* <div className={`${profileWidth} mt-16`}>
         <h2 className="font-semibold font-mono text-2xl text-white">Bio</h2>
         {settingsPage ? (
           <>
@@ -212,7 +255,7 @@ export default function Profile({
             <MDXRemote {...data.bioMdx} />
           </article>
         )}
-      </div>
+      </div> */}
 
       {/* Edit buttons */}
       {settingsPage ? (
@@ -236,24 +279,22 @@ export default function Profile({
             shallow
             replace
             scroll={false}
-            className="rounded-full border border-gray-800 hover:border-white w-12 h-12 flex justify-center items-center transition-all">
-
+            className="rounded-full border border-gray-800 hover:border-white w-12 h-12 flex justify-center items-center transition-all"
+          >
             <XIcon className="h-4 w-4 text-white" />
-
           </Link>
         </div>
       ) : session?.username === user.username ? (
-        (<Link
+        <Link
           href={{ query: { settings: true } }}
           as="/settings"
           shallow
           replace
           scroll={false}
-          className="fixed bottom-10 right-10 rounded-full border bg-black border-gray-800 hover:border-white w-12 h-12 flex justify-center items-center transition-all">
-
+          className="fixed bottom-10 right-10 rounded-full border bg-black border-gray-800 hover:border-white w-12 h-12 flex justify-center items-center transition-all"
+        >
           <EditIcon className="h-4 w-4 text-white" />
-
-        </Link>)
+        </Link>
       ) : null}
     </div>
   );
