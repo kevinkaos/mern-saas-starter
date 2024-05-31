@@ -10,7 +10,7 @@ import { defaultMetaProps } from '@/components/layout/meta';
 import clientPromise from '@/lib/mongodb';
 
 export default function Home({ user }: { user: UserProps }) {
-  return <Profile user={user} settings={false} />;
+  return <Profile user={user} settings={true} />;
 }
 
 export const getStaticProps: GetStaticProps = async () => {
