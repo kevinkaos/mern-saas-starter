@@ -23,6 +23,7 @@ import { useRouter } from 'next/router';
 import Biography from '@/components/profile/biography';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MDXRemoteSerializeResult } from 'next-mdx-remote';
+import { Session } from 'next-auth';
 
 export const profileWidth = 'max-w-5xl mx-auto px-4 sm:px-6 lg:px-8';
 
@@ -44,6 +45,11 @@ export interface BiographyProps {
     }>
   >;
   data: Data;
+  handleSave: () => void;
+  user: UserProps;
+  session: Session | null;
+  saving: boolean;
+  error: string;
 }
 
 export default function Profile({
@@ -203,66 +209,31 @@ export default function Profile({
                   settingsPage={settingsPage}
                   setData={setData}
                   data={data}
+                  handleSave={handleSave}
+                  user={user}
+                  session={session}
+                  saving={saving}
+                  error={error}
                 />
               </TabsContent>
               <TabsContent value={tabs[1].name}>
-                <Biography
+                {/* <Biography
                   settingsPage={settingsPage}
                   setData={setData}
                   data={data}
-                />
+                /> */}
               </TabsContent>
               <TabsContent value={tabs[2].name}>
-                <Biography
+                {/* <Biography
                   settingsPage={settingsPage}
                   setData={setData}
                   data={data}
-                />
+                /> */}
               </TabsContent>
             </Tabs>
           </div>
         </div>
       </div>
-
-      {/* Edit buttons */}
-      {settingsPage ? (
-        <div className="fixed bottom-10 right-10 flex items-center space-x-3">
-          <p className="text-sm text-gray-500">{error}</p>
-          <button
-            className={`${
-              saving ? 'cursor-not-allowed' : ''
-            } rounded-full border border-[#0070F3] hover:border-2 w-12 h-12 flex justify-center items-center transition-all`}
-            disabled={saving}
-            onClick={handleSave}
-          >
-            {saving ? (
-              <LoadingDots color="white" />
-            ) : (
-              <CheckIcon className="h-4 w-4 text-white" />
-            )}
-          </button>
-          <Link
-            href={`/${user.username}`}
-            shallow
-            replace
-            scroll={false}
-            className="rounded-full border border-gray-800 hover:border-white w-12 h-12 flex justify-center items-center transition-all"
-          >
-            <XIcon className="h-4 w-4 text-white" />
-          </Link>
-        </div>
-      ) : session?.username === user.username ? (
-        <Link
-          href={{ query: { settings: true } }}
-          as="/settings"
-          shallow
-          replace
-          scroll={false}
-          className="fixed bottom-10 right-10 rounded-full border bg-black border-gray-800 hover:border-white w-12 h-12 flex justify-center items-center transition-all"
-        >
-          <EditIcon className="h-4 w-4 text-white" />
-        </Link>
-      ) : null}
     </div>
   );
 }
